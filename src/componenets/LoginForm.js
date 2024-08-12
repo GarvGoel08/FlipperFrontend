@@ -6,7 +6,6 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  // Check if user is already logged in USING LOCAL STORAGE tokenExpiry
 
   useEffect(() => {
     const tokenExpiry = localStorage.getItem("tokenExpiry");
@@ -22,7 +21,7 @@ export default function LoginForm() {
       alert("All fields are required");
       return;
     }
-
+  
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if (!emailRegex.test(email)) {
       alert("Invalid email");
@@ -32,25 +31,29 @@ export default function LoginForm() {
       alert("Password must be at least 8 characters");
       return;
     }
+  
     const res = await fetch(`${baseURL}users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({email, password }),
-      credentials: "include",
+      body: JSON.stringify({ email, password }),
     });
+  
     if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem("token", data.token);
       localStorage.setItem("tokenExpiry", Date.now() + 1000 * 60 * 60 * 24 * 3);
       navigate("/Dashboard");
     } else {
       const data = await res.json();
       alert(
         data.error ||
-          "An error occurred. Please try again later or contact support"
+        "An error occurred. Please try again later or contact support"
       );
     }
   };
+  
   return (
     <div className="grow flex items-center justify-center">
       <div className="bg-[#0b0c19] flex flex-col my-10 mx-2 text-white p-6 py-8 rounded-lg overflow-x-hidden  min-w-[490px] max-sm:min-w-0 max-sm:w-full">

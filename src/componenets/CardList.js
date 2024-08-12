@@ -12,11 +12,12 @@ export default function CardList() {
 
   useEffect(() => {
     const getCards = async () => {
+      const token = localStorage.getItem("token");
       const res = await fetch(`${baseURL}flipcards/`, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
       });
       if (res.ok) {
         const data = await res.json();
@@ -29,29 +30,32 @@ export default function CardList() {
   }, []);
 
   const addCard = async () => {
+    const token = localStorage.getItem("token");
     const res = await fetch(`${baseURL}flipcards/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         question: question,
         answer: answer,
       }),
-      credentials: "include",
     });
     if (res.ok) {
       const newCard = await res.json();
       setCards([newCard.flipCard, ...cards]);
     }
   };
+
   const deleteCard = async (id) => {
+    const token = localStorage.getItem("token");
     const res = await fetch(`${baseURL}flipcards/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      credentials: "include",
     });
     if (res.ok) {
       const deletedCard = await res.json();
@@ -59,17 +63,19 @@ export default function CardList() {
       setCards(newCards);
     }
   };
+
   const updateCard = async (id, question, answer) => {
+    const token = localStorage.getItem("token");
     const res = await fetch(`${baseURL}flipcards/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         question: question,
         answer: answer,
       }),
-      credentials: "include",
     });
     if (res.ok) {
       const updatedCard = await res.json();
@@ -84,6 +90,7 @@ export default function CardList() {
       setCards(newCards);
     }
   };
+
   const navigate = useNavigate();
   const redirectToCards = () => {
     navigate("/Cards", { state: { cards: cards } });
@@ -124,7 +131,14 @@ export default function CardList() {
         </div>
       </div>
       {cards.map((card) => (
-        <CardInfo key={card.id} Question={card.question} Answer={card.answer} id={card.id} deleteCard={deleteCard} updateCard={updateCard}/>
+        <CardInfo
+          key={card.id}
+          Question={card.question}
+          Answer={card.answer}
+          id={card.id}
+          deleteCard={deleteCard}
+          updateCard={updateCard}
+        />
       ))}
       <AddCard
         showModal={showModal}

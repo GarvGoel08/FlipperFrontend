@@ -43,9 +43,10 @@ export default function SignUpForm() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name, email, password }),
-      credentials: "include",
     });
     if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem("token", data.token);
       localStorage.setItem("tokenExpiry", Date.now() + 1000 * 60 * 60 * 24 * 3);
       navigate("/Dashboard");
     } else {
